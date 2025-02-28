@@ -1,0 +1,1 @@
+export const URL_SERVER = 'http://98.85.192.200:3000'
