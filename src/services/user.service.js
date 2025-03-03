@@ -1,11 +1,18 @@
 import { URL_SERVER } from "../server/URL_SERVER";
 
+export const loadSession = () => {
+  const user = JSON.parse(sessionStorage.getItem('user'));
+  return user ? user:null;
+}
+
+
 export const getUser = () => {
   const user = sessionStorage.getItem("user");
   return user ? JSON.parse(user) : null;
 };
 
 export const existsUser = async ({ id }) => {
+  console.log(id);
   const options = {
     method: "GET",
     headers: {
@@ -27,6 +34,7 @@ export const existsUser = async ({ id }) => {
 };
 
 export const createUser = async (user) => {
+  console.log(user)
   const options = {
     method: "POST",
     headers: {
@@ -36,14 +44,13 @@ export const createUser = async (user) => {
   };
 
   try {
-    const [exists] = Promise.all(existsUser(user));
+    const exists = await existsUser(user);
 
     if (exists) throw new Error("El usuario ya existe");
 
     const response = await fetch(`${URL_SERVER}/users`, options);
 
     const data = await response.json();
-
     data.status = response.status;
     return data;
   } catch (error) {
@@ -68,6 +75,7 @@ export const loginUser = async (user) => {
       throw new Error("El usuario o la contraseña son incorrectos");
 
     data.status = response.status;
+    data.message = response.message;
     return data;
   } catch (error) {
     return error;
